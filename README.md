@@ -16,9 +16,7 @@ the jwt payload should contain the ports allowed, this is still to be revised:
     
     {
       "sub": "user2",
-      "ports": {
-         "tcp": [6001]
-      },
+      "ports": ["6001"],
       "iat": 1516239022
     }
 
