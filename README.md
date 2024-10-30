@@ -38,7 +38,7 @@ frp version >= v0.31.0
     61d371c34edebe1b1f8003cd95129415c46d2cae729bb2a455f237dfb264fb42
     ```
 
-2. Run fp-multiuser:
+2. Run frp_jwt_allowed_ports:
 
     `./frp_jwt_allowed_ports -l 127.0.0.1:7200 -k ./secret`
 

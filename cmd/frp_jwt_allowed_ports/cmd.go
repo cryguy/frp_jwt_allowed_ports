@@ -2,17 +2,14 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
+	"github.com/cryguy/frp_jwt_allowed_ports/pkg/server"
 	"log"
 	"os"
-	"strings"
-
-	"github.com/gofrp/fp-multiuser/pkg/server"
 
 	"github.com/spf13/cobra"
 )
 
-const version = "0.0.2"
+const version = "0.0.1"
 
 var (
 	showVersion bool
@@ -24,25 +21,25 @@ var (
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&showVersion, "version", "v", false, "version")
 	rootCmd.PersistentFlags().StringVarP(&bindAddr, "bind_addr", "l", "127.0.0.1:7200", "bind address")
-	rootCmd.PersistentFlags().StringVarP(&tokenFile, "token_file", "f", "./tokens", "token file")
+	rootCmd.PersistentFlags().StringVarP(&tokenFile, "secret_file", "k", "./secret", "secret file")
 }
 
 var rootCmd = &cobra.Command{
-	Use:   "fp-multiuser",
-	Short: "fp-multiuser is the server plugin of frp to support multiple users.",
+	Use:   "frp_jwt_allowed_ports",
+	Short: "frp_jwt_allowed_ports is the server plugin of frp to support multiple users using jwt and by extension grant of port use.",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if showVersion {
 			fmt.Println(version)
 			return nil
 		}
-		tokens, err := ParseTokensFromFile(tokenFile)
+		secret, err := getSecretFromFile(tokenFile)
 		if err != nil {
 			log.Printf("parse tokens from file %s error: %v", tokenFile, err)
 			return err
 		}
 		s, err := server.New(server.Config{
 			BindAddress: bindAddr,
-			Tokens:      tokens,
+			Secret:      secret,
 		})
 		if err != nil {
 			return err
@@ -58,18 +55,10 @@ func Execute() {
 	}
 }
 
-func ParseTokensFromFile(file string) (map[string]string, error) {
-	buf, err := ioutil.ReadFile(file)
+func getSecretFromFile(filePath string) ([]byte, error) {
+	secret, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
-	ret := make(map[string]string)
-	rows := strings.Split(string(buf), "\n")
-	for _, row := range rows {
-		kvs := strings.SplitN(row, "=", 2)
-		if len(kvs) == 2 {
-			ret[strings.TrimSpace(kvs[0])] = strings.TrimSpace(kvs[1])
-		}
-	}
-	return ret, nil
+	return secret, nil
 }

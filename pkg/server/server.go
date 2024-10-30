@@ -7,14 +7,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gofrp/fp-multiuser/pkg/server/controller"
+	"github.com/cryguy/frp_jwt_allowed_ports/pkg/server/controller"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Config struct {
 	BindAddress string
-	Tokens      map[string]string
+	Secret      []byte
 }
 
 type Server struct {
@@ -77,6 +77,6 @@ func (s *Server) initHTTPServer() error {
 		Handler: engine,
 	}
 
-	controller.NewOpController(s.cfg.Tokens).Register(engine)
+	controller.NewOpController(s.cfg.Secret).Register(engine)
 	return nil
 }
