@@ -27,13 +27,13 @@ for os in $os_all; do
                 continue
             fi
             mkdir ${frp_plugin_path}
-            mv ./frps_allowed_ports_${os}_${arch}.exe ${frp_plugin_path}/frps_allowed_ports.exe
+            mv ./frp_jwt_allowed_ports_${os}_${arch}.exe ${frp_plugin_path}/frp_jwt_allowed_ports.exe
         else
             if [ ! -f "./frp_jwt_allowed_ports_${os}_${arch}" ]; then
                 continue
             fi
             mkdir ${frp_plugin_path}
-            mv ./frps_allowed_ports_${os}_${arch} ${frp_plugin_path}/frps_allowed_ports
+            mv ./frp_jwt_allowed_ports_${os}_${arch} ${frp_plugin_path}/frp_jwt_allowed_ports
         fi
         cp ../LICENSE ${frp_plugin_path}
 
