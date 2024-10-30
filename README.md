@@ -52,7 +52,7 @@ frp version >= v0.31.0
     [plugin.frp_jwt_allowed_ports]
     addr = 127.0.0.1:7200
     path = /handler
-    ops = Jwt
+    ops = NewProxy
     ```
 
     TOML:
@@ -64,7 +64,7 @@ frp version >= v0.31.0
     [[frp_jwt_allowed_ports]]
     addr = "127.0.0.1:7200"
     path = "/handler"
-    ops = ["Jwt"]
+    ops = ["NewProxy"]
     ```
 
 4. Specify username and meta_token in frpc configure file.
@@ -125,4 +125,6 @@ frp version >= v0.31.0
     remotePort = 6001
     ```
 
-# Code taken from both https://github.com/Parmicciano/frp_plugin_allowed_ports and https://github.com/gofrp/fp-multiuser
+# Credits
+ - https://github.com/Parmicciano/frp_plugin_allowed_ports - for their initial work on the plugin/idea
+ - https://github.com/gofrp/fp-multiuser - for their initial work on user authentication

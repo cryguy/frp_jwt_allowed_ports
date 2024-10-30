@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Taken from https://github.com/Parmicciano/frp_plugin_allowed_ports/blob/main/package.sh - all credits to the original author
 # compile for version
 make

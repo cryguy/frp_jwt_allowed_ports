@@ -63,7 +63,7 @@ func contains(s []string, str string) bool {
 
 func (c *OpController) HandleLogin(ctx *gin.Context) (interface{}, error) {
 	var r plugin.Request
-	var content plugin.LoginContent
+	var content plugin.NewProxyContent
 	r.Content = &content
 	if err := ctx.BindJSON(&r); err != nil {
 		return nil, &HTTPError{
@@ -72,32 +72,26 @@ func (c *OpController) HandleLogin(ctx *gin.Context) (interface{}, error) {
 		}
 	}
 
-	var claims, err = verifyJWT(content.User, c.secret)
+	var claims, err = verifyJWT(content.User.User, c.secret)
 
 	var res plugin.Response
 	if err != nil && claims != nil {
-		// check port claim here
-		var proxyRequest plugin.Request
-		var proxyContent plugin.NewProxyContent
-
-		proxyRequest.Content = &proxyContent
-
 		fmt.Println("-------------Plugin: Allowed Ports--------------------")
-		fmt.Printf("ProxyName: %s\tProxyType%s\t", proxyContent.ProxyName, proxyContent.ProxyType)
-		if strings.ToLower(proxyContent.ProxyType) == "tcp" || strings.ToLower(proxyContent.ProxyType) == "udp" {
-			fmt.Printf("RemotePort: %d\r\n", proxyContent.RemotePort)
-		} else if strings.HasPrefix(proxyContent.ProxyType, "http") {
-			fmt.Printf("CustomDomains%s\r\n", proxyContent.CustomDomains)
+		fmt.Printf("ProxyName: %s\tProxyType%s\t", content.ProxyName, content.ProxyType)
+		if strings.ToLower(content.ProxyType) == "tcp" || strings.ToLower(content.ProxyType) == "udp" {
+			fmt.Printf("RemotePort: %d\r\n", content.RemotePort)
+		} else if strings.HasPrefix(content.ProxyType, "http") {
+			fmt.Printf("CustomDomains%s\r\n", content.CustomDomains)
 		} else {
 			fmt.Println("Won't do validation for this type")
 			res.Unchange = true
 			return res, nil
 		}
 
-		subdomain := proxyContent.SubDomain
-		remoteport := strconv.Itoa(proxyContent.RemotePort)
+		subdomain := content.SubDomain
+		remoteport := strconv.Itoa(content.RemotePort)
 
-		if subdomain == "" && remoteport == "0" && len(proxyContent.CustomDomains) == 0 {
+		if subdomain == "" && remoteport == "0" && len(content.CustomDomains) == 0 {
 			res.Reject = true
 			res.RejectReason = "Rejected due to misconfiguration of the client"
 		}
@@ -108,7 +102,7 @@ func (c *OpController) HandleLogin(ctx *gin.Context) (interface{}, error) {
 				find = true
 			}
 
-			if contains(proxyContent.CustomDomains, portAllowed) {
+			if contains(content.CustomDomains, portAllowed) {
 				find = true
 			}
 		}
