@@ -1,37 +1,46 @@
-# fp-multiuser
+# frp_jwt_allowed_ports
+
 
 frp server plugin to support multiple users for [frp](https://github.com/fatedier/frp).
 
-fp-multiuser will run as one single process and accept HTTP requests from frps.
 
-[README](README.md) | [中文文档](README_zh.md)
+frp_jwt_allowed_ports will run as one single process and accept HTTP requests from frps.
 
 ### Features
 
-* Support multiple user authentication by tokens saved in file.
+* Support multiple user authentication by jwt secret key - it allows a server or application to generate a jwt key with grants of ports to the user.
+
+### JWT Format
+
+the jwt payload should contain the ports allowed, this is still to be revised:
+    
+    {
+      "sub": "user2",
+      "ports": {
+         "tcp": [6001]
+      },
+      "iat": 1516239022
+    }
 
 ### Download
 
-Download fp-multiuser binary file from [Release](https://github.com/gofrp/fp-multiuser/releases).
+Download frp_jwt_allowed_ports binary file from [Release](https://github.com/cryguy/frp_jwt_allowed_ports/releases).
 
 ### Requirements
 
 frp version >= v0.31.0
 
-### Usage
+### Example Usage
 
-1. Create file `tokens` including all support usernames and tokens.
+1. Create file `secret` which contains the jwt secret.
 
+    ``` EXAMPLE ONLY! PLEASE CHANGE!
+    61d371c34edebe1b1f8003cd95129415c46d2cae729bb2a455f237dfb264fb42
     ```
-    user1=123
-    user2=abc
-    ```
-
-    One user each line. Username and token are split by `=`.
 
 2. Run fp-multiuser:
 
-    `./fp-multiuser -l 127.0.0.1:7200 -f ./tokens`
+    `./frp_jwt_allowed_ports -l 127.0.0.1:7200 -k ./secret`
 
 3. Register plugin in frps.
 
@@ -42,10 +51,10 @@ frp version >= v0.31.0
     [common]
     bind_port = 7000
 
-    [plugin.multiuser]
+    [plugin.frp_jwt_allowed_ports]
     addr = 127.0.0.1:7200
     path = /handler
-    ops = Login
+    ops = Jwt
     ```
 
     TOML:
@@ -54,10 +63,10 @@ frp version >= v0.31.0
     # frps.toml
     bindPort = 7000
 
-    [[httpPlugins]]
+    [[frp_jwt_allowed_ports]]
     addr = "127.0.0.1:7200"
     path = "/handler"
-    ops = ["Login"]
+    ops = ["Jwt"]
     ```
 
 4. Specify username and meta_token in frpc configure file.
@@ -69,8 +78,7 @@ frp version >= v0.31.0
     [common]
     server_addr = x.x.x.x
     server_port = 7000
-    user = user1
-    meta_token = 123
+    jwt = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMSIsInBvcnRzIjp7InRjcCI6WzYwMDBdfSwiaWF0IjoxNTE2MjM5MDIyfQ.WVRo6Upcw71pQZHGHnAPRVVz5BXZk3l2kWy252Q5YJ8
 
     [ssh]
     type = tcp
@@ -83,8 +91,7 @@ frp version >= v0.31.0
     ```toml
     serverAddr = "x.x.x.x"
     serverPort = 7000
-    user = "user1"
-    metadatas.token = "123"
+    jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMSIsInBvcnRzIjp7InRjcCI6WzYwMDBdfSwiaWF0IjoxNTE2MjM5MDIyfQ.WVRo6Upcw71pQZHGHnAPRVVz5BXZk3l2kWy252Q5YJ8"
 
     [[proxies]]
     type = "tcp"
@@ -99,8 +106,7 @@ frp version >= v0.31.0
     [common]
     server_addr = x.x.x.x
     server_port = 7000
-    user = user2
-    meta_token = abc
+    jwt = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMiIsInBvcnRzIjp7InRjcCI6WzYwMDFdfSwiaWF0IjoxNTE2MjM5MDIyfQ.jp2jka_m7MMtfhKJDbUtKRJ8lCe01S2seHSOBu08s5o
 
     [ssh]
     type = tcp
@@ -113,11 +119,12 @@ frp version >= v0.31.0
     ```toml
     serverAddr = "x.x.x.x"
     serverPort = 7000
-    user = "user2"
-    metadatas.token = "abc"
+    jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyMiIsInBvcnRzIjp7InRjcCI6WzYwMDFdfSwiaWF0IjoxNTE2MjM5MDIyfQ.jp2jka_m7MMtfhKJDbUtKRJ8lCe01S2seHSOBu08s5o"
 
     [[proxies]]
     type = "tcp"
     localPort = 22
     remotePort = 6001
     ```
+
+
