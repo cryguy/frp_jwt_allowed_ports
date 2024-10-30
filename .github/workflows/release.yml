@@ -32,4 +32,4 @@ jobs:
           args: release --clean
           # workdir: ./cmd/frps_allowed_ports
         env:
-          GITHUB_TOKEN: ${{ secrets.GPR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
