@@ -75,7 +75,7 @@ func (c *OpController) HandleLogin(ctx *gin.Context) (interface{}, error) {
 	var claims, err = verifyJWT(content.User.User, c.secret)
 
 	var res plugin.Response
-	if err != nil && claims != nil {
+	if err == nil && claims != nil {
 		fmt.Println("-------------Plugin: Allowed Ports--------------------")
 		fmt.Printf("ProxyName: %s\tProxyType%s\t", content.ProxyName, content.ProxyType)
 		if strings.ToLower(content.ProxyType) == "tcp" || strings.ToLower(content.ProxyType) == "udp" {
