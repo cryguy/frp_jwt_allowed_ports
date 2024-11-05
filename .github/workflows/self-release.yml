@@ -4,10 +4,13 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
+  repository-projects: write
 
 jobs:
   goreleaser:
+    environment: deployment
     runs-on: self-hosted
     steps:
       - name: Checkout
@@ -32,4 +35,4 @@ jobs:
           args: release --clean
           # workdir: ./cmd/frps_allowed_ports
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
