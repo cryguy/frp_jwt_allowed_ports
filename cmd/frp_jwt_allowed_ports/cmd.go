@@ -1,15 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/cryguy/frp_jwt_allowed_ports/pkg/server"
+	"github.com/spf13/cobra"
 	"log"
 	"os"
-
-	"github.com/spf13/cobra"
 )
 
-const version = "0.0.1"
+const version = "0.1.1"
 
 var (
 	showVersion bool
@@ -60,5 +60,5 @@ func getSecretFromFile(filePath string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return secret, nil
+	return bytes.TrimSpace(secret), nil
 }
